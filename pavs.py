@@ -41,6 +41,8 @@ class Window(QMainWindow):
 
         self.rowNo = 1
         self.colNo = 0
+        self.fName = ""
+        self.fileNameExist = ""
 
         self.model = QStandardItemModel()
 
@@ -192,6 +194,7 @@ class Window(QMainWindow):
                 QDir.homePath())
 
         if fileName != '':
+            self.fileNameExist = fileName
             self.mediaPlayer.setMedia(
                     QMediaContent(QUrl.fromLocalFile(fileName)))
             self.playButton.setEnabled(True)
@@ -251,7 +254,8 @@ class Window(QMainWindow):
         # self.tableWidget.
 
     def export(self):
-        path, _ = QFileDialog.getSaveFileName(self, 'Save File', QDir.homePath() + "/export.csv", "CSV Files(*.csv *.txt)")
+        self.fName = ((self.fileNameExist.rsplit('/', 1)[1]).rsplit('.',1))[0]
+        path, _ = QFileDialog.getSaveFileName(self, 'Save File', QDir.homePath() + "/"+self.fName+".csv", "CSV Files(*.csv *.txt)")
         if path:
             with open(path, 'w') as stream:
                 print("saving", path)
@@ -313,12 +317,11 @@ class Window(QMainWindow):
         self.mediaPlayer.setVolume(self.mediaPlayer.volume() - 10)
         print("Volume: " + str(self.mediaPlayer.volume()))
 
-    def mouseMoveEvent(self, event):
-        if event.buttons() == Qt.LeftButton:
-            self.move(event.globalPos() \
-                        - QPoint(self.frameGeometry().width() / 2, \
-                        self.frameGeometry().height() / 2))
-            event.accept()
+    # def mouseMoveEvent(self, event):
+        # if event.buttons() == Qt.LeftButton:
+        #     self.move(event.globalPos() \- QPoint(self.frameGeometry().width() / 2, \
+        #                 self.frameGeometry().height() / 2))
+        #     event.accept()
 
     def dragEnterEvent(self, event):
         if event.mimeData().hasUrls():
