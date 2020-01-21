@@ -1,7 +1,7 @@
 1.1) Use '[' to automatically add the start time in the Dialog Box
 1.2) Use ']' to automatically add the end time in the Dialog Box
 
-2.1) Delete just the adjacent lines from the end of the table
+2.1) Delete just the last 'N' lines from the bottom of the table
 
 3.1) Use up and down arrow keys to adjust the volume of the video
 3.2) Use left and right arrow keys to seek forward and backward in the video
