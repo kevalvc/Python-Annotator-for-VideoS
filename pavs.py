@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLineEdit, QFileDialog, QHBoxLayout, QLabel, QSizePolicy, QSlider, QStyle, QVBoxLayout, QWidget, QStatusBar, QTableWidget, QVBoxLayout, QTableWidgetItem, QHBoxLayout, QSplitter, QGroupBox, QFormLayout, QAction, QGridLayout, QShortcut
+from PyQt5.QtWidgets import QMainWindow, QApplication, QPushButton, QLineEdit, QComboBox, QFileDialog, QStyleFactory, QHBoxLayout, QLabel, QSizePolicy, QSlider, QStyle, QVBoxLayout, QWidget, QStatusBar, QTableWidget, QVBoxLayout, QTableWidgetItem, QHBoxLayout, QSplitter, QGroupBox, QFormLayout, QAction, QGridLayout, QShortcut
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5 import QtCore, Qt, QtGui
@@ -43,6 +43,7 @@ class Window(QMainWindow):
         self.colNo = 0
         self.fName = ""
         self.fileNameExist = ""
+        self.dropDownName = ""
 
         self.model = QStandardItemModel()
 
@@ -51,10 +52,10 @@ class Window(QMainWindow):
         self.tableWidget.setColumnCount(4) #, Start Time, End Time, TimeStamp
         self.tableWidget.setRowCount(50)
 
-        self.tableWidget.setItem(0, 0, QTableWidgetItem("Extra"))
         self.tableWidget.setItem(0, 1, QTableWidgetItem("Start Time"))
         self.tableWidget.setItem(0, 2, QTableWidgetItem("End Time"))
-        self.tableWidget.setItem(0, 3, QTableWidgetItem("label"))
+        self.tableWidget.setItem(0, 3, QTableWidgetItem("Label Index"))
+        self.tableWidget.setItem(0, 0, QTableWidgetItem("Label Name"))
 
         self.videoWidget = QVideoWidget()
         self.frameID=0
@@ -87,8 +88,8 @@ class Window(QMainWindow):
         self.exportButton = QPushButton("Export")
         self.exportButton.clicked.connect(self.export)
 
-        self.ctr = QLineEdit()
-        self.ctr.setPlaceholderText("Extra")
+        # self.ctr = QLineEdit()
+        # self.ctr.setPlaceholderText("Extra")
 
         self.startTime = QLineEdit()
         self.startTime.setPlaceholderText("Select Start Time")
@@ -96,8 +97,19 @@ class Window(QMainWindow):
         self.endTime = QLineEdit()
         self.endTime.setPlaceholderText("Select End Time")
 
-        self.iLabel = QLineEdit()
-        self.iLabel.setPlaceholderText("Label")
+        self.iLabel = QComboBox(self)
+        self.iLabel.addItem("1. Eye Contact")
+        self.iLabel.addItem("2. Pointing")
+        self.iLabel.addItem("3. Response to Names")
+        self.iLabel.addItem("4. Following Pointing")
+        self.iLabel.addItem("5. Babbling")
+        self.iLabel.addItem("6. Question-Answering")
+        self.iLabel.addItem("7. Showing")
+        self.iLabel.addItem("8. Following Instructions")
+        self.iLabel.activated[str].connect(self.style_choice)
+
+        # self.iLabel = QLineEdit()
+        # self.iLabel.setPlaceholderText("Label")
 
         self.positionSlider = QSlider(Qt.Horizontal)
         self.positionSlider.setRange(0, 100)
@@ -142,10 +154,10 @@ class Window(QMainWindow):
 
         # Right Layout {
         inputFields = QHBoxLayout()
-        inputFields.addWidget(self.ctr)
         inputFields.addWidget(self.startTime)
         inputFields.addWidget(self.endTime)
         inputFields.addWidget(self.iLabel)
+        # inputFields.addWidget(self.ctr)
 
         feats = QHBoxLayout()
         feats.addWidget(self.nextButton)
@@ -219,6 +231,11 @@ class Window(QMainWindow):
             else:
                 self.target_frame_idx = frame_idx
 
+    def style_choice(self, text):
+        self.dropDownName = text
+        QApplication.setStyle(QStyleFactory.create(text))
+
+
     def addStartTime(self):
         self.startTime.setText(self.lbl.text())
 
@@ -226,17 +243,17 @@ class Window(QMainWindow):
         self.endTime.setText(self.elbl.text())
 
     def next(self):
-        self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(self.ctr.text()))
-        self.colNo += 1
         self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(self.startTime.text()))
         self.colNo += 1
         self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(self.endTime.text()))
         self.colNo += 1
-        self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(self.iLabel.text()))
+        self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(str(self.iLabel.currentIndex()+1)))
+        self.colNo += 1
+        self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(self.iLabel.currentText().split(' ')[1]))
         self.colNo = 0
         self.rowNo += 1
         # print(self.ctr.text(), self.startTime.text(), self.iLabel.text(), self.rowNo, self.colNo)
-        # print("Next Clicked")
+        # print(self.iLabel.currentIndex())
 
     def delete(self):
         # print("delete")
