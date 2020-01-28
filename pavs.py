@@ -240,7 +240,7 @@ class Window(QMainWindow):
         self.startTime.setText(self.lbl.text())
 
     def addEndTime(self):
-        self.endTime.setText(self.elbl.text())
+        self.endTime.setText(self.lbl.text())
 
     def next(self):
         self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(self.startTime.text()))
@@ -281,7 +281,7 @@ class Window(QMainWindow):
                 for row in range(self.tableWidget.rowCount()):
                     rowdata = []
                     for column in range(self.tableWidget.columnCount()):
-                        item = self.tableWidget.item(row+1, column)
+                        item = self.tableWidget.item(row, column)
                         if item is not None:
                             rowdata.append(item.text())
                         else:
