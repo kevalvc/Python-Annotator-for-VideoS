@@ -52,10 +52,10 @@ class Window(QMainWindow):
         self.tableWidget.setColumnCount(4) #, Start Time, End Time, TimeStamp
         self.tableWidget.setRowCount(50)
 
-        self.tableWidget.setItem(0, 1, QTableWidgetItem("Start Time"))
-        self.tableWidget.setItem(0, 2, QTableWidgetItem("End Time"))
-        self.tableWidget.setItem(0, 3, QTableWidgetItem("Label Index"))
-        self.tableWidget.setItem(0, 0, QTableWidgetItem("Label Name"))
+        self.tableWidget.setItem(0, 0, QTableWidgetItem("Start Time"))
+        self.tableWidget.setItem(0, 1, QTableWidgetItem("End Time"))
+        self.tableWidget.setItem(0, 2, QTableWidgetItem("Label Index"))
+        self.tableWidget.setItem(0, 3, QTableWidgetItem("Label Name"))
 
         self.videoWidget = QVideoWidget()
         self.frameID=0
