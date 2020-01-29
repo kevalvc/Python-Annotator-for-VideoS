@@ -42,6 +42,7 @@ class Window(QMainWindow):
         self.rowNo = 1
         self.colNo = 0
         self.fName = ""
+        self.fName2 = ""
         self.fileNameExist = ""
         self.dropDownName = ""
 
@@ -49,16 +50,13 @@ class Window(QMainWindow):
 
         self.mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
         self.tableWidget = QTableWidget()
-        self.tableWidget.setColumnCount(4) #, Start Time, End Time, TimeStamp
-        self.tableWidget.setRowCount(50)
-
-        self.tableWidget.setItem(0, 0, QTableWidgetItem("Start Time"))
-        self.tableWidget.setItem(0, 1, QTableWidgetItem("End Time"))
-        self.tableWidget.setItem(0, 2, QTableWidgetItem("Label Index"))
-        self.tableWidget.setItem(0, 3, QTableWidgetItem("Label Name"))
+        self.tableWidget.cellClicked.connect(self.checkTableFrame)
 
         self.videoWidget = QVideoWidget()
         self.frameID=0
+
+
+        self.insertBaseRow()
 
         openButton = QPushButton("Open...")
         openButton.clicked.connect(self.openFile)
@@ -87,6 +85,9 @@ class Window(QMainWindow):
 
         self.exportButton = QPushButton("Export")
         self.exportButton.clicked.connect(self.export)
+
+        self.importButton = QPushButton("Import")
+        self.importButton.clicked.connect(self.importCSV)
 
         # self.ctr = QLineEdit()
         # self.ctr.setPlaceholderText("Extra")
@@ -163,6 +164,7 @@ class Window(QMainWindow):
         feats.addWidget(self.nextButton)
         feats.addWidget(self.delButton)
         feats.addWidget(self.exportButton)
+        feats.addWidget(self.importButton)
 
         layout2 = QVBoxLayout()
         layout2.addWidget(self.tableWidget)
@@ -210,6 +212,7 @@ class Window(QMainWindow):
             self.mediaPlayer.setMedia(
                     QMediaContent(QUrl.fromLocalFile(fileName)))
             self.playButton.setEnabled(True)
+            self.clearTable()
         self.videopath = QUrl.fromLocalFile(fileName)
 
     def play(self):
@@ -267,8 +270,11 @@ class Window(QMainWindow):
         for index in index_list:
             self.tableWidget.removeRow(index.row())
 
-
-        # self.tableWidget.
+    def clearTable(self):
+        while self.tableWidget.rowCount() > 0:
+            self.tableWidget.removeRow(0)
+        self.insertBaseRow()
+        print("Clearing")
 
     def export(self):
         self.fName = ((self.fileNameExist.rsplit('/', 1)[1]).rsplit('.',1))[0]
@@ -282,13 +288,76 @@ class Window(QMainWindow):
                     rowdata = []
                     for column in range(self.tableWidget.columnCount()):
                         item = self.tableWidget.item(row, column)
-                        if item is not None:
+                        if item is not None and item is not "":
                             rowdata.append(item.text())
                         else:
-                            rowdata.append('')
+                            break
                     writer.writerow(rowdata)
         # self.isChanged = False
         # self.setCurrentFile(path)
+
+    def importCSV(self):
+        # if fName2 != "":
+            # self.fName2 = ((self.fileNameExist.rsplit('/', 1)[1]).rsplit('.',1))[0]
+            # path, _ = QFileDialog.getSaveFileName(self, 'Save File', QDir.homePath() + "/"+self.fName2+".csv", "CSV Files(*.csv *.txt)")
+        # else:
+        path, _ = QFileDialog.getOpenFileName(self, 'Save File', QDir.homePath() , "CSV Files(*.csv *.txt)")
+        print(path)
+        if path:
+            with open(path, 'r') as stream:
+                print("loading", path)
+                reader = csv.reader(stream)
+                # reader = csv.reader(stream, delimiter=';', quoting=csv.QUOTE_ALL)
+                # reader = csv.reader(stream, delimiter=';', quoting=csv.QUOTE_ALL)
+                # for row in reader:
+                for i, row in enumerate(reader):
+                    if i == 0:
+                        continue
+                    else:
+                        if(len(row) == 4):
+                            st, et, li, ln = row
+                            self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(st))
+                            self.colNo += 1
+                            self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(et))
+                            self.colNo += 1
+                            self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(str(li)))
+                            self.colNo += 1
+                            self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(ln))
+                            self.rowNo += 1
+                            self.colNo = 0
+                        # print(st, et, li, ln)
+                # writer = csv.writer(stream, delimiter=self.delimit)
+                # for row in range(self.tableWidget.rowCount()):
+                    # rowdata = []
+                    # for column in range(self.tableWidget.columnCount()):
+                        # item = self.tableWidget.item(row, column)
+                        # if item is not None:
+                            # rowdata.append(item.text())
+                        # else:
+                            # rowdata.append('')
+                    # writer.writerow(rowdata)
+
+    def insertBaseRow(self):
+        self.tableWidget.setColumnCount(4) #, Start Time, End Time, TimeStamp
+        self.tableWidget.setRowCount(50)
+        self.rowNo = 1
+        self.colNo = 0
+        self.tableWidget.setItem(0, 0, QTableWidgetItem("Start Time"))
+        self.tableWidget.setItem(0, 1, QTableWidgetItem("End Time"))
+        self.tableWidget.setItem(0, 2, QTableWidgetItem("Label Index"))
+        self.tableWidget.setItem(0, 3, QTableWidgetItem("Label Name"))
+
+    def checkTableFrame(self, row, column):
+        if ((row > 0) and (column < 2)):
+            # print("Row %d and Column %d was clicked" % (row, column))
+            item = self.tableWidget.item(row, column)
+            # print(item.text())
+            itemFrame = item.text()
+            itemFrame = itemFrame.split(":")
+            print(itemFrame)
+            frameTime = int(itemFrame[2]) + int(itemFrame[1])*60 + int(itemFrame[0])*3600
+            print(frameTime)
+            self.mediaPlayer.setPosition(frameTime*1000+1*60)
 
     def mediaStateChanged(self, state):
         if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
