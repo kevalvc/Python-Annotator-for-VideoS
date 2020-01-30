@@ -7,8 +7,9 @@
 3.2) Use left and right arrow keys to seek forward and backward in the video
 3.3) Use shift+left and shift+right to seek forward and backward by 10 seconds in the video
 
-4.1) Need to press play button after opening the video
+4.1) Need to press play button after opening the video to run the actual video
 4.2) The '->' is used to enter data to the next line of the table
+4.3) The import and export button are used to import and export the data table into a CSV file
 
 5.1) Be careful before closing the window and exporting the file, the table does not save in the application
 5.2) Check if the import data (CSV file) and the import video (MP4 file) are of the same context and not of two separate videos
