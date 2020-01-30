@@ -6,8 +6,6 @@ from PyQt5.QtCore import QRect, QSize, Qt, QUrl, QDir, QTime, pyqtSlot
 from PyQt5.QtGui import QFont, QPixmap, QImage, QColor, QPainter, QPen, QKeySequence, QStandardItemModel
 import os
 import csv
-import cv
-import cv2
 import sys
 import numpy as np
 
@@ -179,6 +177,10 @@ class Window(QMainWindow):
         self.shortcut.activated.connect(self.addStartTime)
         self.shortcut = QShortcut(QKeySequence("]"), self)
         self.shortcut.activated.connect(self.addEndTime)
+        self.shortcut = QShortcut(QKeySequence("L"), self)
+        self.shortcut.activated.connect(self.openFile)
+        self.shortcut = QShortcut(QKeySequence("C"), self)
+        self.shortcut.activated.connect(self.clearTable)
 
         self.shortcut = QShortcut(QKeySequence(Qt.Key_Right), self)
         self.shortcut.activated.connect(self.forwardSlider)
