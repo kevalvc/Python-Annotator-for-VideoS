@@ -128,7 +128,7 @@ class Window(QMainWindow):
         plotBox = QHBoxLayout()
 
         controlLayout = QHBoxLayout()
-        controlLayout.setContentsMargins(0, 0, 0, 0)
+        # controlLayout.setContentsMargins(0, 0, 0, 0)
         controlLayout.addWidget(openButton)
         controlLayout.addWidget(self.playButton)
         controlLayout.addWidget(self.lbl)
@@ -139,18 +139,15 @@ class Window(QMainWindow):
         self.setCentralWidget(wid)
 
         # Left Layout{
-        # vidLayout = QVBoxLayout()
-        # vidLayout.addWidget(self.videoWidget)
-        # vidLayout.addLayout(self.grid_root)
         # layout.addWidget(self.videoWidget)
 
         layout = QVBoxLayout()
+        layout.addWidget(self.videoWidget, 3)
         # layout.addLayout(self.grid_root)
-        layout.addWidget(self.videoWidget)
         layout.addLayout(controlLayout)
         layout.addWidget(self.errorLabel)
 
-        plotBox.addLayout(layout, 2)
+        plotBox.addLayout(layout, 3)
         # }
 
         # Right Layout {
@@ -168,7 +165,7 @@ class Window(QMainWindow):
 
         layout2 = QVBoxLayout()
         layout2.addWidget(self.tableWidget)
-        layout2.addLayout(inputFields, 2)
+        layout2.addLayout(inputFields, 1)
         layout2.addLayout(feats, 2)
         # layout2.addWidget(self.nextButton)
         # }
@@ -214,6 +211,7 @@ class Window(QMainWindow):
             self.playButton.setEnabled(True)
             self.clearTable()
         self.videopath = QUrl.fromLocalFile(fileName)
+        self.errorLabel.setText(fileName)
 
     def play(self):
         # self.is_playing_video = not self.is_playing_video
@@ -351,13 +349,14 @@ class Window(QMainWindow):
         if ((row > 0) and (column < 2)):
             # print("Row %d and Column %d was clicked" % (row, column))
             item = self.tableWidget.item(row, column)
-            # print(item.text())
-            itemFrame = item.text()
-            itemFrame = itemFrame.split(":")
-            print(itemFrame)
-            frameTime = int(itemFrame[2]) + int(itemFrame[1])*60 + int(itemFrame[0])*3600
-            print(frameTime)
-            self.mediaPlayer.setPosition(frameTime*1000+1*60)
+            print(item)
+            if item != None:
+                itemFrame = item.text()
+                itemFrame = itemFrame.split(":")
+                print(itemFrame)
+                frameTime = int(itemFrame[2]) + int(itemFrame[1])*60 + int(itemFrame[0])*3600
+                print(frameTime)
+                self.mediaPlayer.setPosition(frameTime*1000+1*60)
 
     def mediaStateChanged(self, state):
         if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
