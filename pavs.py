@@ -209,9 +209,9 @@ class Window(QMainWindow):
             self.mediaPlayer.setMedia(
                     QMediaContent(QUrl.fromLocalFile(fileName)))
             self.playButton.setEnabled(True)
-            self.clearTable()
         self.videopath = QUrl.fromLocalFile(fileName)
         self.errorLabel.setText(fileName)
+        self.errorLabel.setStyleSheet('color: black')
 
     def play(self):
         # self.is_playing_video = not self.is_playing_video
@@ -299,6 +299,7 @@ class Window(QMainWindow):
             # self.fName2 = ((self.fileNameExist.rsplit('/', 1)[1]).rsplit('.',1))[0]
             # path, _ = QFileDialog.getSaveFileName(self, 'Save File', QDir.homePath() + "/"+self.fName2+".csv", "CSV Files(*.csv *.txt)")
         # else:
+        self.clearTable()
         path, _ = QFileDialog.getOpenFileName(self, 'Save File', QDir.homePath() , "CSV Files(*.csv *.txt)")
         print(path)
         if path:
@@ -323,17 +324,6 @@ class Window(QMainWindow):
                             self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(ln))
                             self.rowNo += 1
                             self.colNo = 0
-                        # print(st, et, li, ln)
-                # writer = csv.writer(stream, delimiter=self.delimit)
-                # for row in range(self.tableWidget.rowCount()):
-                    # rowdata = []
-                    # for column in range(self.tableWidget.columnCount()):
-                        # item = self.tableWidget.item(row, column)
-                        # if item is not None:
-                            # rowdata.append(item.text())
-                        # else:
-                            # rowdata.append('')
-                    # writer.writerow(rowdata)
 
     def insertBaseRow(self):
         self.tableWidget.setColumnCount(4) #, Start Time, End Time, TimeStamp
@@ -349,14 +339,20 @@ class Window(QMainWindow):
         if ((row > 0) and (column < 2)):
             # print("Row %d and Column %d was clicked" % (row, column))
             item = self.tableWidget.item(row, column)
-            print(item)
-            if item != None:
-                itemFrame = item.text()
-                itemFrame = itemFrame.split(":")
-                print(itemFrame)
-                frameTime = int(itemFrame[2]) + int(itemFrame[1])*60 + int(itemFrame[0])*3600
-                print(frameTime)
-                self.mediaPlayer.setPosition(frameTime*1000+1*60)
+            if (item != (None and "")):
+                try:
+                    itemFrame = item.text()
+                    itemFrame = itemFrame.split(":")
+                    frameTime = int(itemFrame[2]) + int(itemFrame[1])*60 + int(itemFrame[0])*3600
+                    elblFrames = self.elbl.text().split(":")
+                    elblFrameTime = int(elblFrames[2]) + int(elblFrames[1])*60 + int(elblFrames[0])*3600
+                    # print("Elbl FT ", str(elblFrameTime))
+                    # print("FT ", str(frameTime))
+                    # print(frameTime)
+                    self.mediaPlayer.setPosition(frameTime*1000+1*60)
+                except:
+                    self.errorLabel.setText("Some Video Error - Please Recheck Video Imported!")
+                    self.errorLabel.setStyleSheet('color: red')
 
     def mediaStateChanged(self, state):
         if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
@@ -381,6 +377,7 @@ class Window(QMainWindow):
     def handleError(self):
         self.playButton.setEnabled(False)
         self.errorLabel.setText("Error: " + self.mediaPlayer.errorString())
+        self.errorLabel.setStyleSheet('color: red')
 
     def forwardSlider(self):
         self.mediaPlayer.setPosition(self.mediaPlayer.position() + 1*60)
