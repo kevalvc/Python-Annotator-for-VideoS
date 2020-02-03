@@ -145,7 +145,7 @@ class Window(QMainWindow):
         layout.addLayout(controlLayout)
         layout.addWidget(self.errorLabel)
 
-        plotBox.addLayout(layout, 3)
+        plotBox.addLayout(layout, 5)
         # }
 
         # Right Layout {
@@ -168,7 +168,7 @@ class Window(QMainWindow):
         # layout2.addWidget(self.nextButton)
         # }
 
-        plotBox.addLayout(layout2, 1)
+        plotBox.addLayout(layout2, 2)
 
         # self.setLayout(layout)
         wid.setLayout(plotBox)
@@ -252,7 +252,7 @@ class Window(QMainWindow):
         self.colNo += 1
         self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(str(self.iLabel.currentIndex()+1)))
         self.colNo += 1
-        self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(self.iLabel.currentText().split(' ')[1]))
+        self.tableWidget.setItem(self.rowNo, self.colNo, QTableWidgetItem(self.iLabel.currentText().split(' ', 1)[1]))
         self.colNo = 0
         self.rowNo += 1
         # print(self.ctr.text(), self.startTime.text(), self.iLabel.text(), self.rowNo, self.colNo)
@@ -277,7 +277,8 @@ class Window(QMainWindow):
         print("Clearing")
 
     def export(self):
-        self.fName = ((self.fileNameExist.rsplit('/', 1)[1]).rsplit('.',1))[0]
+        if self.fileNameExist:
+            self.fName = ((self.fileNameExist.rsplit('/', 1)[1]).rsplit('.',1))[0]
         path, _ = QFileDialog.getSaveFileName(self, 'Save File', QDir.homePath() + "/"+self.fName+".csv", "CSV Files(*.csv *.txt)")
         if path:
             with open(path, 'w') as stream:
