@@ -289,7 +289,7 @@ class Window(QMainWindow):
                     rowdata = []
                     for column in range(self.tableWidget.columnCount()):
                         item = self.tableWidget.item(row, column)
-                        if item is not None and item is not "":
+                        if item != None and item != "":
                             rowdata.append(item.text())
                         else:
                             break
